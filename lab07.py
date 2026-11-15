@@ -298,7 +298,7 @@ class AllocationService(Generic[TDevice]):
 
 
 def run_tests() -> None:
-    print("Kiểm thử \n")
+    print("Kiểm thử\n")
 
     proj_repo = InMemoryRepository[ProjectorRemote]()
     ac_repo = InMemoryRepository[AirConditionerRemote]()
@@ -309,4 +309,81 @@ def run_tests() -> None:
     p3 = ProjectorRemote("PRJ-03", "Remote Panasonic Tầng 3", "Tủ A2", battery_level=90)
 
     ac1 = AirConditionerRemote("AC-01", "Remote Daikin Khu A", "Tủ B1", ["A101", "A102", "A203"])
-    ac2 = AirConditionerRemote("AC-02", "Remote
+    ac2 = AirConditionerRemote("AC-02", "Remote LG Khu B", "Tủ B2", ["B101", "B105"])
+
+    m1 = WirelessMicrophone("MIC-01", "Micro Shure 01", "Tủ C1", battery_level=25, signal_quality=90)
+    m2 = WirelessMicrophone("MIC-02", "Micro Sennheiser 02", "Tủ C1", battery_level=80, signal_quality=70)
+    m3 = WirelessMicrophone("MIC-03", "Micro JBL 03", "Tủ C2", battery_level=95, signal_quality=85)
+
+    for p in (p1, p2, p3):
+        proj_repo.add(p)
+    for ac in (ac1, ac2):
+        ac_repo.add(ac)
+    for m in (m1, m2, m3):
+        mic_repo.add(m)
+    print("[Test 1 & 11] Đã thêm thành công 3 loại thiết bị vào InMemoryRepository<T> mà không lặp mã.")
+
+    try:
+        proj_repo.add(ProjectorRemote("PRJ-01", "Remote Trùng Mã", "Tủ A1", battery_level=100))
+        assert False, "Phải ném ra DuplicateIdException"
+    except DuplicateIdException as ex:
+        print(f"[Test 2] Bắt ngoại lệ trùng mã thành công: {ex}")
+
+    found = proj_repo.find_by_id("PRJ-02")
+    not_found = proj_repo.find_by_id("PRJ-999")
+    assert found is p2 and not_found is None
+    print(f"[Test 3] Tìm theo mã 'PRJ-02': {found} | Tìm 'PRJ-999': {not_found}")
+
+    ready_projectors = proj_repo.find_all(lambda d: d.is_ready_for_use())
+    ready_mics = mic_repo.find_all(lambda d: d.is_ready_for_use())
+    assert [d.id for d in ready_projectors] == ["PRJ-02", "PRJ-03"]
+    assert [d.id for d in ready_mics] == ["MIC-02", "MIC-03"]
+    print(f"[Test 4] Projector sẵn sàng: {[d.id for d in ready_projectors]} | Mic sẵn sàng: {[d.id for d in ready_mics]}")
+
+    highest_proj_strategy = HighestPriorityStrategy[ProjectorRemote](
+        lambda device: device.get_default_priority_score()
+    )
+    proj_service = AllocationService[ProjectorRemote](proj_repo, highest_proj_strategy)
+    allocated_proj = proj_service.allocate()
+    assert allocated_proj.id == "PRJ-03"
+    assert allocated_proj.status == DeviceStatus.BORROWED
+    print(f"[Test 5 & 10] Cấp phát projector ưu tiên cao nhất: {allocated_proj.id} -> Trạng thái: {allocated_proj.status.value}")
+
+    ac_service = AllocationService[AirConditionerRemote](
+        ac_repo,
+        FirstAvailableStrategy[AirConditionerRemote](),
+    )
+    allocated_ac = ac_service.allocate(lambda device: device.is_compatible_with("A203"))
+    assert allocated_ac.id == "AC-01"
+    assert allocated_ac.status == DeviceStatus.BORROWED
+    print(f"[Test 6] Cấp phát điều khiển điều hòa cho phòng A203: {allocated_ac.id} -> Trạng thái: {allocated_ac.status.value}")
+
+    mic_service = AllocationService[WirelessMicrophone](
+        mic_repo,
+        FirstAvailableStrategy[WirelessMicrophone](),
+    )
+    first_mic = mic_service.allocate()
+    assert first_mic.id == "MIC-02"
+    print(f"[Test 7] Chọn micro đầu tiên sẵn sàng (FirstAvailable): {first_mic.id}")
+
+    first_mic.return_device()
+    assert first_mic.status == DeviceStatus.AVAILABLE
+
+    mic_service.change_strategy(
+        HighestPriorityStrategy[WirelessMicrophone](lambda d: d.get_default_priority_score())
+    )
+    best_mic = mic_service.allocate()
+    assert best_mic.id == "MIC-03"
+    print(f"[Test 8] Sau khi đổi sang HighestPriority lúc runtime, chọn được: {best_mic.id} (Điểm: {best_mic.get_default_priority_score()})")
+
+    try:
+        ac_service.allocate(lambda device: device.is_compatible_with("Z999"))
+        assert False, "Phải ném ra NoSuitableItemException"
+    except NoSuitableItemException as ex:
+        print(f"[Test 9] Bắt ngoại lệ khi không có thiết bị phù hợp: {ex}")
+
+    print("\n=== TẤT CẢ 11 KỊCH BẢN KIỂM THỬ ĐỀU ĐẠT ===")
+
+
+if __name__ == "__main__":
+    run_tests()
