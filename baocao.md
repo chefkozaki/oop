@@ -5,7 +5,7 @@ Vũ Bảo Khôi - 202419071
 
 ## 1. Link github
 
-
+https://github.com/chefkozaki/oop/blob/main/lab06.py
 
 ## 2. Danh sách các lớp và thành phần hệ thống
 
@@ -24,7 +24,7 @@ Vũ Bảo Khôi - 202419071
 * **`BorrowItem` (`Class`)**: Đại diện cho từng dòng thiết bị được mượn trong phiếu (ngày mượn, hạn trả, tiết mượn, ngày trả thực tế, tính phí phạt).
 * **`BorrowingSlip` (`Class`)**: Phiếu mượn thiết bị, quản lý tập hợp các `BorrowItem` theo quan hệ hợp thành. Đảm bảo tính nhất quán dữ liệu khi thêm/trả thiết bị.
 
-### 2.3. Hệ phân cấp Ngoại lệ nghiệp vụ (Exceptions)
+### 2.3. Hệ phân cấp ngoại lệ nghiệp vụ
 * **`BorrowingException`** *(kế thừa `Exception`)*: Ngoại lệ cơ sở cho toàn bộ lỗi nghiệp vụ mượn trả.
 * **`DeviceUnavailableException`** *(kế thừa `BorrowingException`)*: Phát sinh khi thiết bị không ở trạng thái `AVAILABLE` lúc mượn.
 * **`BorrowLimitExceededException`** *(kế thừa `BorrowingException`)*: Phát sinh khi người mượn vượt quá số lượng thiết bị tối đa cho phép.
@@ -46,7 +46,7 @@ Vũ Bảo Khôi - 202419071
 
 ## 1. Link github
 
-
+https://github.com/chefkozaki/oop/blob/main/lab07.py
 
 
 ## 2. Danh sách các lớp và Interface trong hệ thống
@@ -64,7 +64,7 @@ Vũ Bảo Khôi - 202419071
 * **`AirConditionerRemote` (Kế thừa `TeachingDevice`):** Quản lý điều khiển điều hòa với tập hợp phòng tương thích `compatible_rooms`. Sẵn sàng khi `Available`; cung cấp phương thức kiểm tra `is_compatible_with(room_id)`.
 * **`WirelessMicrophone` (Kế thừa `TeachingDevice`):** Quản lý micro không dây với `battery_level` và `signal_quality` (0–100). Sẵn sàng khi `Available`, pin $\ge 30\%$ và tín hiệu $\ge 40\%$; điểm ưu tiên bằng trung bình cộng của pin và tín hiệu.
 
-### 2.3. Nhóm Kho lưu trữ & dịch vụ cấp phát
+### 2.3. Nhóm kho lưu trữ & dịch vụ cấp phát
 * **`IRepository[TIdentifiable]` (Generic Interface):** Định nghĩa các thao tác CRUD và lọc dữ liệu (`add`, `remove`, `find_by_id`, `get_all`, `find_all`) với ràng buộc kiểu `TIdentifiable` phải tuân thủ `IIdentifiable`.
 * **`InMemoryRepository[TIdentifiable]`:** Cài đặt kho lưu trữ trên bộ nhớ bằng `dict[str, TIdentifiable]` cho phép truy xuất theo mã với độ phức tạp $O(1)$ và trả về `tuple` bất biến để bảo vệ dữ liệu nội bộ.
 * **`ISelectionStrategy[T]` (Generic Interface):** Định nghĩa hợp đồng thuật toán chọn 1 phần tử tốt nhất từ danh sách ứng viên thông qua `select(candidates)`.
@@ -85,14 +85,14 @@ Vũ Bảo Khôi - 202419071
 
 
 ## 1. Link github
-
+https://github.com/chefkozaki/oop/blob/main/lab08.py
 
 
 ## 2. Danh sách lớp
 
 ### 2.1. Danh sách các lớp trong hệ thống
 
-#### Nhóm Danh mục (Enum) & Ngoại lệ (Exception)
+#### Nhóm Enum & ngoại lệ
 * **`DeviceStatus`:** Định nghĩa các trạng thái hoạt động của thiết bị (`Available`, `Borrowed`, `UnderMaintenance`).
 * **`AlertSeverity`:** Định nghĩa các mức độ nghiêm trọng của cảnh báo (`Information`, `Warning`, `Critical`).
 * **`InvalidDeviceReadingException`:** Ngoại lệ phát sinh khi giá trị pin hoặc chất lượng tín hiệu nằm ngoài khoảng cho phép `[0, 100]`.
@@ -115,7 +115,6 @@ Vũ Bảo Khôi - 202419071
 * **`FilteredAlertSubscriber`:** Sử dụng delegate (`AlertFilter` và `Action`) để lọc sự kiện theo điều kiện tùy chỉnh trước khi thực thi hành động.
 * **`DeviceMonitoringCoordinator`:** Lớp điều phối việc đăng ký (`subscribe`) và hủy đăng ký (`unsubscribe` / `dispose`) hàng loạt giữa danh sách thiết bị và các dịch vụ.
 
----
 
 ## 3. Sơ đồ lớp
 
@@ -128,7 +127,7 @@ Vũ Bảo Khôi - 202419071
 
 
 ## 1. Link github
-
+https://github.com/chefkozaki/oop/blob/main/lab010.py
 ## 2. Danh sách lớp
 
 ### 2.1. Danh sách lớp & giao diện
